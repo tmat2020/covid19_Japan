@@ -1,0 +1,44 @@
+library(dplyr)
+library(tidyr)
+library(lubridate)
+library(ggplot2)
+library(TTR)
+
+japan_covid <- read.csv("newly_confirmed_cases_daily.csv")
+
+japan_covid2 <- japan_covid %>% 
+  mutate(date2 = ymd(Date))
+
+# distribution of all of Japan
+japan_covid2 %>% 
+  ggplot(aes(x=date2, y=ALL)) +
+  geom_bar(stat="identity", color="blue") +
+  theme_bw()
+
+# distribution of Chiba prefecture
+japan_covid2 %>% 
+  ggplot(aes(x=date2, y=Chiba)) +
+  geom_bar(stat="identity", color="blue") +
+  theme_bw()
+
+# simple moving average
+japan_covid2 <- japan_covid2 %>% 
+  mutate(SMA7 = SMA(ALL,7)) %>% 
+  mutate(SMA21 = SMA(ALL,21))
+
+# chart
+japan_covid2 %>% 
+  ggplot() + 
+  geom_bar(aes(x=date2,y=ALL),stat="identity", color="blue") +
+  geom_line(aes(x=date2, y=SMA7),color="red", size=2) +
+  geom_line(aes(x=date2, y=SMA21),color="green", size=2) +
+  theme_bw()
+
+# histogram
+japan_covid2 %>% 
+  ggplot(aes(x=ALL)) +
+  geom_histogram() +
+  theme_bw()
+
+
+
